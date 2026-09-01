@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-language Subtitle Maker | IncomeAIHub by M.Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0d10;
+    --bg-2:#12151a;
+    --card:#161a20;
+    --card-2:#1c2129;
+    --border:#262c35;
+    --gold:#e8b84b;
+    --gold-dim:#8a6f2c;
+    --emerald:#3ddc97;
+    --violet:#9b7bf0;
+    --text:#eef1f5;
+    --text-dim:#9aa3af;
+    --text-faint:#5f6772;
+    --danger:#e8664b;
+    --radius:14px;
+    --radius-sm:8px;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 500px at 10% -10%, rgba(155,123,240,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(61,220,151,.08), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'DM Sans', sans-serif;
+    min-height:100vh;
+    line-height:1.5;
+  }
+  h1,h2,h3,.brand{ font-family:'Syne', sans-serif; }
+  .mono{ font-family:'DM Mono', monospace; }
+  a{ color:inherit; }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px; border-bottom:1px solid var(--border);
+    background:rgba(11,13,16,.85); backdrop-filter:blur(10px);
+    position:sticky; top:0; z-index:50; flex-wrap:wrap; gap:12px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.15rem; }
+  .brand .dot{ width:10px; height:10px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--emerald)); }
+  .brand small{ display:block; font-family:'DM Sans'; font-weight:500; font-size:.68rem; color:var(--text-dim); }
+  .header-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+  .btn{
+    border:1px solid var(--border); background:var(--card-2); color:var(--text);
+    padding:9px 16px; border-radius:10px; font-size:.85rem; font-weight:600;
+    cursor:pointer; transition:.15s ease; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover{ border-color:var(--gold-dim); transform:translateY(-1px); }
+  .btn-gold{ background:linear-gradient(135deg,var(--gold),#c9922f); color:#1a1305; border:none; }
+  .btn-emerald{ background:linear-gradient(135deg,var(--emerald),#1f9d6c); color:#04140d; border:none; }
+  .btn-violet{ background:linear-gradient(135deg,var(--violet),#6f4fd6); color:#fff; border:none; }
+  .btn-ghost{ background:transparent; }
+  .btn-sm{ padding:6px 10px; font-size:.75rem; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
+  .badge{ font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:.03em; }
+  .badge-demo{ background:rgba(232,184,75,.15); color:var(--gold); border:1px solid rgba(232,184,75,.35); }
+  .badge-pro{ background:rgba(61,220,151,.15); color:var(--emerald); border:1px solid rgba(61,220,151,.35); }
+  .badge-locked{ background:rgba(232,102,75,.15); color:var(--danger); border:1px solid rgba(232,102,75,.35); }
+
+  /* ---------- Layout ---------- */
+  .wrap{ max-width:1400px; margin:0 auto; padding:22px 24px 60px; }
+  .grid{
+    display:grid; grid-template-columns: 1.15fr 1fr; gap:20px;
+  }
+  @media (max-width:980px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    background:linear-gradient(180deg,var(--card),var(--bg-2));
+    border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  .card h2{ font-size:1rem; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .card .sub{ color:var(--text-dim); font-size:.8rem; margin-bottom:14px; }
+
+  textarea, input[type="text"], input[type="number"], select{
+    width:100%; background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:10px 12px; font-size:.88rem; font-family:'DM Sans';
+    outline:none; transition:.15s;
+  }
+  textarea:focus, input:focus, select:focus{ border-color:var(--gold-dim); }
+  textarea{ resize:vertical; min-height:130px; font-family:'DM Mono'; font-size:.82rem; }
+  label{ font-size:.75rem; color:var(--text-dim); font-weight:600; display:block; margin:10px 0 6px; }
+  .row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .row > *{ flex:1; min-width:110px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tab{
+    padding:7px 14px; border-radius:20px; font-size:.78rem; font-weight:600;
+    background:var(--card-2); border:1px solid var(--border); cursor:pointer; color:var(--text-dim);
+    display:flex; align-items:center; gap:6px;
+  }
+  .tab.active{ background:linear-gradient(135deg,var(--violet),#6f4fd6); color:#fff; border-color:transparent; }
+  .tab .x{ opacity:.6; font-size:.7rem; }
+  .tab .x:hover{ opacity:1; color:var(--danger); }
+
+  /* ---------- Cues ---------- */
+  .cue-list{ max-height:520px; overflow-y:auto; padding-right:4px; }
+  .cue-list::-webkit-scrollbar{ width:6px; }
+  .cue-list::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+  .cue{
+    background:var(--card-2); border:1px solid var(--border); border-radius:10px;
+    padding:10px 12px; margin-bottom:8px; transition:.15s;
+  }
+  .cue.active-cue{ border-color:var(--emerald); box-shadow:0 0 0 1px var(--emerald) inset; }
+  .cue-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .cue-idx{ font-family:'DM Mono'; font-size:.72rem; color:var(--gold); }
+  .cue-times{ display:flex; gap:6px; align-items:center; }
+  .cue-times input{ width:78px; padding:4px 6px; font-size:.72rem; font-family:'DM Mono'; }
+  .cue-times span{ color:var(--text-faint); font-size:.7rem; }
+  .cue-text{ width:100%; font-family:'DM Sans'; font-size:.85rem; min-height:40px; padding:6px 8px; }
+  .cue-actions{ display:flex; gap:6px; margin-top:6px; }
+  .cue-actions button{ font-size:.68rem; padding:4px 8px; }
+
+  /* ---------- Preview ---------- */
+  .preview-box{
+    position:relative; width:100%; aspect-ratio:16/9; background:#000;
+    border-radius:12px; overflow:hidden; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .preview-box video, .preview-box audio{ width:100%; }
+  .preview-box .no-media{ color:var(--text-faint); font-size:.85rem; text-align:center; padding:20px; }
+  .sub-overlay{
+    position:absolute; left:5%; right:5%; text-align:center; pointer-events:none;
+    padding:6px 10px; border-radius:6px; font-weight:700; line-height:1.3;
+    text-shadow:0 2px 6px rgba(0,0,0,.8);
+  }
+
+  /* ---------- Style controls ---------- */
+  .swatch-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .swatch{ width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; }
+  .swatch.selected{ border-color:#fff; }
+
+  /* ---------- Footer / Guide / AdSense ---------- */
+  .adslot{
+    border:1px dashed var(--border); border-radius:10px; padding:14px; text-align:center;
+    color:var(--text-faint); font-size:.72rem; margin:18px 0; background:rgba(255,255,255,.02);
+  }
+  footer{ text-align:center; padding:30px 20px; color:var(--text-faint); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
+  }
+  .modal-bg.show{ display:flex; }
+  .modal{
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    max-width:560px; width:100%; max-height:85vh; overflow-y:auto; padding:26px;
+    box-shadow:var(--shadow);
+  }
+  .modal h2{ margin-bottom:14px; }
+  .modal p, .modal li{ font-size:.88rem; color:var(--text-dim); margin-bottom:8px; }
+  .modal ol, .modal ul{ padding-left:20px; margin-bottom:14px; }
+  .modal .close{ float:right; cursor:pointer; font-size:1.2rem; color:var(--text-faint); }
+
+  .lock-overlay{
+    text-align:center; padding:26px 16px; color:var(--text-dim); font-size:.85rem;
+  }
+  .lock-overlay .icon{ font-size:1.8rem; margin-bottom:10px; }
+
+  .toast{
+    position:fixed; bottom:20px; right:20px; background:var(--card-2); border:1px solid var(--border);
+    padding:12px 18px; border-radius:10px; font-size:.82rem; z-index:300; box-shadow:var(--shadow);
+    display:none;
+  }
+  .toast.show{ display:block; animation:slideIn .25s ease; }
+  @keyframes slideIn{ from{ transform:translateY(10px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+
+  .flex-between{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .small-note{ font-size:.72rem; color:var(--text-faint); margin-top:6px; }
+  .spinner{
+    width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff;
+    border-radius:50%; animation:spin .7s linear infinite; display:inline-block;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <div>
+      Subtitle Maker
+      <small>IncomeAIHub by M.Dev</small>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="badge badge-demo" id="modeBadge">DEMO MODE</span>
+    <span class="badge badge-locked" id="lockBadge">🔒 Free Plan</span>
+    <button class="btn btn-ghost btn-sm" onclick="openGuide()">📘 हिंदी गाइड</button>
+    <button class="btn btn-gold btn-sm" id="unlockBtn" onclick="startUnlock()">⚡ Lifetime Unlock ₹599</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="adslot">Ad Space — AdSense Placeholder (728x90)</div>
+
+  <div class="grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <div class="card">
+        <h2>1️⃣ Script / Transcript</h2>
+        <div class="sub">Text paste karo ya mic se bol kar likho — ye hi subtitles ka base banega.</div>
+        <textarea id="scriptInput" placeholder="Apna video ka script yahan paste karein... ya mic button dabakar bolein.
+
+Example:
+Namaste dosto, aaj hum baat karenge...
+Is video mein aap seekhenge..."></textarea>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn btn-violet" id="micBtn" onclick="toggleMic()">🎤 Voice Input</button>
+          <select id="micLang">
+            <option value="hi-IN">Hindi</option>
+            <option value="en-IN">English (India)</option>
+            <option value="en-US">English (US)</option>
+          </select>
+          <button class="btn btn-ghost" onclick="clearScript()">🗑 Clear</button>
+        </div>
+        <label>Ideal characters per line</label>
+        <div class="row">
+          <input type="number" id="charsPerLine" value="42" min="20" max="80">
+          <input type="number" id="wordsPerSec" value="2.5" step="0.1" min="1" max="5" title="Words per second (reading speed)">
+        </div>
+        <div class="small-note">Chars/line = subtitle line ki max length. Words/sec = reading speed (default 2.5 normal hai).</div>
+        <button class="btn btn-emerald" style="margin-top:12px;" onclick="generateCues()">✨ Generate Subtitle Cues</button>
+      </div>
+
+      <div class="card">
+        <div class="flex-between">
+          <h2>2️⃣ Timeline Editor</h2>
+          <span class="mono small-note" id="cueCount">0 cues</span>
+        </div>
+        <div class="sub">Har cue ka time aur text edit karein. Split/merge/delete bhi kar sakte hain.</div>
+        <div class="cue-list" id="cueList">
+          <div class="lock-overlay">
+            <div class="icon">📝</div>
+            Pehle script se cues generate karein, ya "+ Add Cue" se manually shuru karein.
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="addManualCue()">+ Add Cue</button>
+      </div>
+
+      <div class="card">
+        <h2>3️⃣ Media Preview (optional)</h2>
+        <div class="sub">Video/audio upload karke subtitles ka live sync preview dekhein.</div>
+        <input type="file" id="mediaInput" accept="video/*,audio/*" onchange="loadMedia(event)">
+        <div class="preview-box" id="previewBox" style="margin-top:10px;">
+          <div class="no-media">Media upload karein preview ke liye</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="card">
+        <h2>4️⃣ Languages & Translation</h2>
+        <div class="sub">Multiple languages add karein, AI se translate karein ek click mein.</div>
+        <div class="tabs" id="langTabs"></div>
+        <div class="row">
+          <select id="newLangSelect">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ar">Arabic</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="ja">Japanese</option>
+            <option value="zh">Chinese (Simplified)</option>
+            <option value="bn">Bengali</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="mr">Marathi</option>
+            <option value="gu">Gujarati</option>
+          </select>
+          <button class="btn btn-ghost" onclick="addLanguage()">+ Add</button>
+        </div>
+        <button class="btn btn-emerald" style="margin-top:10px; width:100%;" id="translateBtn" onclick="translateAll()">
+          🌐 Translate Active Language with AI
+        </button>
+        <div class="small-note">Free plan: 1 extra language tak. Unlimited languages ke liye Lifetime Unlock lein.</div>
+      </div>
+
+      <div class="card">
+        <h2>5️⃣ Style Customizer</h2>
+        <div class="sub">Burned-in preview ke liye subtitle style set karein.</div>
+        <label>Font Family</label>
+        <select id="styleFont" onchange="updateStylePreview()">
+          <option value="'DM Sans',sans-serif">DM Sans</option>
+          <option value="'Syne',sans-serif">Syne (Bold)</option>
+          <option value="Arial,sans-serif">Arial</option>
+          <option value="Georgia,serif">Georgia</option>
+          <option value="'Noto Sans Devanagari',sans-serif">Noto Devanagari</option>
+        </select>
+        <div class="row">
+          <div>
+            <label>Font Size</label>
+            <input type="number" id="styleSize" value="22" min="12" max="48" onchange="updateStylePreview()">
+          </div>
+          <div>
+            <label>Position</label>
+            <select id="stylePos" onchange="updateStylePreview()">
+              <option value="bottom">Bottom</option>
+              <option value="top">Top</option>
+              <option value="middle">Middle</option>
+            </select>
+          </div>
+        </div>
+        <label>Text Color</label>
+        <div class="swatch-row" id="colorSwatches"></div>
+        <label>Background</label>
+        <div class="row">
+          <select id="styleBg" onchange="updateStylePreview()">
+            <option value="rgba(0,0,0,.55)">Semi-transparent black</option>
+            <option value="transparent">None</option>
+            <option value="rgba(0,0,0,.85)">Solid black</option>
+            <option value="rgba(232,184,75,.85)">Gold</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>6️⃣ Export</h2>
+        <div class="sub">Active language ke subtitles download karein.</div>
+        <div class="row">
+          <button class="btn btn-gold" onclick="exportFile('srt')">⬇ .SRT</button>
+          <button class="btn btn-gold" onclick="exportFile('vtt')">⬇ .VTT</button>
+          <button class="btn btn-ghost" onclick="exportFile('txt')">⬇ .TXT</button>
+        </div>
+        <button class="btn btn-violet" style="margin-top:10px; width:100%;" onclick="exportAllLanguages()">
+          📦 Export All Languages (.zip-style multi-download)
+        </button>
+        <div class="small-note" id="exportLockNote">Free plan mein export har baar watermark line ke saath aayega. Unlock se clean export milta hai.</div>
+      </div>
+
+      <div class="adslot">Ad Space — AdSense Placeholder (300x250)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💰 Is Tool Se Kamaai Kaise Karein</h2>
+    <div class="sub">Freelancing strategy — Fiverr, Upwork, WhatsApp outreach aur CA firm network ke liye.</div>
+    <button class="btn btn-ghost" onclick="openMonetize()">Monetization Guide Kholein</button>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 IncomeAIHub by M.Dev · Multi-language Subtitle Maker · Raipur, Chhattisgarh
+</footer>
+
+<!-- ================= GUIDE MODAL ================= -->
+<div class="modal-bg" id="guideModal">
+  <div class="modal">
+    <span class="close" onclick="closeModal('guideModal')">✕</span>
+    <h2>📘 इस्तेमाल कैसे करें (Hindi Guide)</h2>
+    <p><strong>Step 1:</strong> अपने वीडियो का स्क्रिप्ट या ट्रांसक्रिप्ट "Script / Transcript" बॉक्स में पेस्ट करें, या माइक बटन दबाकर बोलकर टाइप करें।</p>
+    <p><strong>Step 2:</strong> "Generate Subtitle Cues" पर क्लिक करें — यह टूल आपके टेक्स्ट को अपने आप subtitle lines और timing में बाँट देगा।</p>
+    <p><strong>Step 3:</strong> Timeline Editor में हर cue का start/end time चेक करें और ज़रूरत हो तो टाइम या टेक्स्ट एडिट करें।</p>
+    <p><strong>Step 4:</strong> अगर वीडियो/ऑडियो अपलोड करेंगे तो प्रीव्यू में subtitles लाइव सिंक होकर दिखेंगे — इससे टाइमिंग चेक करना आसान हो जाता है।</p>
+    <p><strong>Step 5:</strong> "Languages & Translation" सेक्शन में नई भाषा जोड़ें और "Translate with AI" दबाएँ — आपके subtitles उस भाषा में अपने आप ट्रांसलेट हो जाएंगे।</p>
+    <p><strong>Step 6:</strong> Style Customizer से फॉन्ट, साइज़, रंग और पोज़िशन सेट करें — यह सिर्फ प्रीव्यू के लिए है, एडिटिंग सॉफ्टवेयर में बर्न-इन करने के लिए गाइड की तरह इस्तेमाल करें।</p>
+    <p><strong>Step 7:</strong> "Export" सेक्शन से .SRT, .VTT या .TXT फाइल डाउनलोड करें और अपने वीडियो एडिटर (Premiere, CapCut, DaVinci) में इम्पोर्ट करें।</p>
+    <p><strong>Free vs Paid:</strong> Free प्लान में 1 अतिरिक्त भाषा और 15 cues तक की लिमिट है। Lifetime Unlock (₹599) से unlimited languages, unlimited cues और clean (बिना watermark) export मिलता है — एक बार पेमेंट, हमेशा के लिए इस्तेमाल।</p>
+    <button class="btn btn-gold" onclick="closeModal('guideModal')" style="width:100%; margin-top:10px;">समझ गया</button>
+  </div>
+</div>
+
+<!-- ================= MONETIZE MODAL ================= -->
+<div class="modal-bg" id="monetizeModal">
+  <div class="modal">
+    <span class="close" onclick="closeModal('monetizeModal')">✕</span>
+    <h2>💰 Monetization Strategy (Hinglish)</h2>
+    <p><strong>1. Fiverr Gig:</strong> "I will create multi-language subtitles for your YouTube/Instagram videos" — gig thumbnail mein "5 languages in 24 hours" jaisa hook use karein. Starting price ₹800–1500/video, extra language +₹300.</p>
+    <p><strong>2. Upwork:</strong> "Video Localization & Subtitle Specialist" profile banayein. Portfolio mein is tool se banaye 2-3 sample subtitle files attach karein (before/after screenshots ke saath).</p>
+    <p><strong>3. WhatsApp Outreach (Local Businesses):</strong> Raipur ke coaching institutes, YouTubers, aur local brands ko message karein — "Aapke videos ko Hindi + English + regional language subtitles ke saath 2x reach mil sakta hai. Free sample chahiye?"</p>
+    <p><strong>4. CA Firm / Corporate Network:</strong> CA firms jo webinars ya training videos banati hain unhe multi-language subtitle service offer karein — compliance training videos ko regional languages mein accessible banane ka angle use karein.</p>
+    <p><strong>5. Recurring Revenue:</strong> YouTubers/creators ke saath monthly retainer set karein — "har video ka subtitle + translation" package, ₹3000-5000/month per creator (5-8 videos).</p>
+    <p><strong>Pitch line example:</strong> "Aapke content ko main 24 hours mein 3 languages mein subtitle-ready bana dungi — zyada audience, zyada watch time, zyada revenue."</p>
+  </div>
+</div>
+
+<!-- ================= UNLOCK MODAL ================= -->
+<div class="modal-bg" id="unlockModal">
+  <div class="modal">
+    <span class="close" onclick="closeModal('unlockModal')">✕</span>
+    <h2>⚡ Lifetime Unlock — ₹599</h2>
+    <p>Ek baar payment, hamesha ke liye access:</p>
+    <ul>
+      <li>Unlimited languages (15+)</li>
+      <li>Unlimited subtitle cues</li>
+      <li>Clean export — koi watermark nahi</li>
+      <li>Bulk export all languages</li>
+      <li>Priority AI translation</li>
+    </ul>
+    <button class="btn btn-gold" style="width:100%;" onclick="processPayment()">
+      <span id="payBtnText">Razorpay se Pay Karein — ₹599</span>
+    </button>
+    <p class="small-note" style="margin-top:10px;">DEMO MODE mein hai — is button se sirf simulation hoga, real payment nahi.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIG — Supabase + Razorpay (fill real values to go live)
+   ============================================================ */
+const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const RAZORPAY_KEY_ID = "rzp_live_YOUR_KEY_ID";
+const TOOL_ID = "multi-language-subtitle-maker";
+const PRICE_INR = 599;
+
+const DEMO_MODE = SUPABASE_URL.includes("YOUR_PROJECT") || RAZORPAY_KEY_ID.includes("YOUR_KEY");
+
+/* ============================================================
+   DEVICE ID + UNLOCK STATE
+   ============================================================ */
+function getDeviceId(){
+  let id = localStorage.getItem('device_id');
+  if(!id){
+    id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('device_id', id);
+  }
+  return id;
+}
+const deviceId = getDeviceId();
+
+function isUnlocked(){
+  return localStorage.getItem(TOOL_ID + '_unlocked') === 'true';
+}
+function setUnlocked(){
+  localStorage.setItem(TOOL_ID + '_unlocked', 'true');
+}
+
+/* ============================================================
+   APP STATE
+   ============================================================ */
+let languages = { 'original': { name:'Original', cues: [] } };
+let activeLang = 'original';
+let mediaEl = null;
+
+const FREE_LANG_LIMIT = 2; // original + 1 extra
+const FREE_CUE_LIMIT = 15;
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modeBadge').textContent = DEMO_MODE ? 'DEMO MODE' : 'LIVE';
+  document.getElementById('modeBadge').style.display = DEMO_MODE ? 'inline-block' : 'none';
+  refreshLockUI();
+  renderColorSwatches();
+  renderLangTabs();
+  checkUnlockStatus();
+});
+
+async function checkUnlockStatus(){
+  if(DEMO_MODE) return;
+  try{
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/check-unlock`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ device_id: deviceId, tool_id: TOOL_ID })
+    });
+    const data = await res.json();
+    if(data.unlocked){ setUnlocked(); refreshLockUI(); }
+  }catch(e){ console.warn('check-unlock failed', e); }
+}
+
+function refreshLockUI(){
+  const unlocked = isUnlocked();
+  document.getElementById('lockBadge').textContent = unlocked ? '✓ Pro Unlocked' : '🔒 Free Plan';
+  document.getElementById('lockBadge').className = 'badge ' + (unlocked ? 'badge-pro' : 'badge-locked');
+  document.getElementById('unlockBtn').style.display = unlocked ? 'none' : 'inline-flex';
+  document.getElementById('exportLockNote').textContent = unlocked
+    ? 'Pro unlocked — clean export, koi limit nahi.'
+    : 'Free plan mein export har baar watermark line ke saath aayega. Unlock se clean export milta hai.';
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openGuide(){ document.getElementById('guideModal').classList.add('show'); }
+function openMonetize(){ document.getElementById('monetizeModal').classList.add('show'); }
+function startUnlock(){ document.getElementById('unlockModal').classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+/* ============================================================
+   VOICE INPUT (Web Speech API)
+   ============================================================ */
+let recognition = null;
+let listening = false;
+function toggleMic(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    toast('❌ Is browser mein voice input support nahi hai. Chrome try karein.');
+    return;
+  }
+  if(listening){
+    recognition.stop();
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = document.getElementById('micLang').value;
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  const box = document.getElementById('scriptInput');
+  let finalText = box.value;
+
+  recognition.onstart = () => {
+    listening = true;
+    document.getElementById('micBtn').textContent = '⏺ Listening... (click to stop)';
+  };
+  recognition.onresult = (e) => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const transcript = e.results[i][0].transcript;
+      if(e.results[i].isFinal){ finalText += transcript + ' '; }
+      else{ interim += transcript; }
+    }
+    box.value = finalText + interim;
+  };
+  recognition.onerror = (e) => { toast('⚠️ Voice input error: ' + e.error); };
+  recognition.onend = () => {
+    listening = false;
+    document.getElementById('micBtn').textContent = '🎤 Voice Input';
+  };
+  recognition.start();
+}
+function clearScript(){ document.getElementById('scriptInput').value = ''; }
+
+/* ============================================================
+   CUE GENERATION FROM SCRIPT
+   ============================================================ */
+function formatTime(sec, vtt=false){
+  const h = Math.floor(sec/3600);
+  const m = Math.floor((sec%3600)/60);
+  const s = Math.floor(sec%60);
+  const ms = Math.round((sec - Math.floor(sec)) * 1000);
+  const pad = (n,l=2) => String(n).padStart(l,'0');
+  const sep = vtt ? '.' : ',';
+  return `${pad(h)}:${pad(m)}:${pad(s)}${sep}${pad(ms,3)}`;
+}
+
+function splitIntoLines(text, maxChars){
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = '';
+  words.forEach(w => {
+    if((cur + ' ' + w).trim().length > maxChars){
+      if(cur) lines.push(cur.trim());
+      cur = w;
+    } else {
+      cur = (cur + ' ' + w).trim();
+    }
+  });
+  if(cur) lines.push(cur.trim());
+  return lines;
+}
+
+function generateCues(){
+  const text = document.getElementById('scriptInput').value.trim();
+  if(!text){ toast('⚠️ Pehle script daalein.'); return; }
+
+  const maxChars = parseInt(document.getElementById('charsPerLine').value) || 42;
+  const wps = parseFloat(document.getElementById('wordsPerSec').value) || 2.5;
+
+  // Split by sentence-ish boundaries first, then wrap
+  const sentences = text.split(/(?<=[.!?।])\s+/).filter(Boolean);
+  let rawLines = [];
+  sentences.forEach(s => rawLines.push(...splitIntoLines(s, maxChars)));
+  if(rawLines.length === 0) rawLines = splitIntoLines(text, maxChars);
+
+  const limit = isUnlocked() ? rawLines.length : Math.min(rawLines.length, FREE_CUE_LIMIT);
+  let t = 0;
+  const cues = [];
+  for(let i=0; i<limit; i++){
+    const line = rawLines[i];
+    const wordCount = line.split(/\s+/).filter(Boolean).length;
+    let duration = Math.max(1.2, wordCount / wps);
+    duration = Math.min(duration, 7);
+    cues.push({ start: t, end: t + duration, text: line });
+    t += duration + 0.15;
+  }
+
+  languages['original'].cues = cues;
+  activeLang = 'original';
+  renderLangTabs();
+  renderCues();
+
+  if(!isUnlocked() && rawLines.length > FREE_CUE_LIMIT){
+    toast(`ℹ️ Free plan: ${FREE_CUE_LIMIT} cues tak generate hue. Baaki ke liye Unlock karein.`);
+  } else {
+    toast(`✅ ${cues.length} subtitle cues generate ho gaye.`);
+  }
+}
+
+function addManualCue(){
+  const lang = languages[activeLang];
+  if(!isUnlocked() && lang.cues.length >= FREE_CUE_LIMIT){
+    toast('🔒 Free plan limit (15 cues) poori ho gayi. Unlock karein.');
+    return;
+  }
+  const lastEnd = lang.cues.length ? lang.cues[lang.cues.length-1].end : 0;
+  lang.cues.push({ start:lastEnd + 0.2, end:lastEnd + 2.2, text:'New subtitle line' });
+  renderCues();
+}
+
+/* ============================================================
+   RENDER CUES
+   ============================================================ */
+function renderCues(){
+  const lang = languages[activeLang];
+  const list = document.getElementById('cueList');
+  document.getElementById('cueCount').textContent = `${lang.cues.length} cues`;
+
+  if(!lang.cues.length){
+    list.innerHTML = `<div class="lock-overlay"><div class="icon">📝</div>Is language ke liye abhi koi cue nahi hai.</div>`;
+    return;
+  }
+
+  list.innerHTML = lang.cues.map((c, i) => `
+    <div class="cue" data-idx="${i}">
+      <div class="cue-head">
+        <span class="cue-idx">#${i+1}</span>
+        <div class="cue-times">
+          <input type="text" class="mono" value="${formatTime(c.start)}" onchange="updateCueTime(${i},'start',this.value)">
+          <span>→</span>
+          <input type="text" class="mono" value="${formatTime(c.end)}" onchange="updateCueTime(${i},'end',this.value)">
+        </div>
+      </div>
+      <textarea class="cue-text" onchange="updateCueText(${i}, this.value)">${escapeHtml(c.text)}</textarea>
+      <div class="cue-actions">
+        <button class="btn btn-ghost btn-sm" onclick="splitCue(${i})">✂ Split</button>
+        <button class="btn btn-ghost btn-sm" onclick="mergeCueDown(${i})">⤵ Merge Next</button>
+        <button class="btn btn-ghost btn-sm" onclick="deleteCue(${i})" style="color:var(--danger);">🗑 Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+}
+
+function parseTimeInput(str){
+  // accepts HH:MM:SS,mmm or HH:MM:SS.mmm or plain seconds
+  const m = str.match(/(\d+):(\d+):(\d+)[.,](\d+)/);
+  if(m){ return (+m[1])*3600 + (+m[2])*60 + (+m[3]) + (+m[4])/1000; }
+  const f = parseFloat(str);
+  return isNaN(f) ? 0 : f;
+}
+
+function updateCueTime(i, which, val){
+  languages[activeLang].cues[i][which] = parseTimeInput(val);
+}
+function updateCueText(i, val){
+  languages[activeLang].cues[i].text = val;
+}
+function deleteCue(i){
+  languages[activeLang].cues.splice(i,1);
+  renderCues();
+}
+function splitCue(i){
+  const c = languages[activeLang].cues[i];
+  const words = c.text.split(' ');
+  if(words.length < 2){ toast('Split ke liye kam se kam 2 words chahiye.'); return; }
+  const mid = Math.ceil(words.length/2);
+  const t1 = words.slice(0,mid).join(' ');
+  const t2 = words.slice(mid).join(' ');
+  const midTime = (c.start + c.end) / 2;
+  const newCue = { start: midTime, end: c.end, text: t2 };
+  c.end = midTime; c.text = t1;
+  languages[activeLang].cues.splice(i+1, 0, newCue);
+  renderCues();
+}
+function mergeCueDown(i){
+  const cues = languages[activeLang].cues;
+  if(i >= cues.length - 1){ toast('Ye last cue hai, merge nahi ho sakta.'); return; }
+  cues[i].end = cues[i+1].end;
+  cues[i].text = cues[i].text + ' ' + cues[i+1].text;
+  cues.splice(i+1, 1);
+  renderCues();
+}
+
+/* ============================================================
+   LANGUAGES
+   ============================================================ */
+function renderLangTabs(){
+  const tabs = document.getElementById('langTabs');
+  tabs.innerHTML = Object.keys(languages).map(key => `
+    <div class="tab ${key===activeLang?'active':''}" onclick="switchLang('${key}')">
+      ${languages[key].name}
+      ${key !== 'original' ? `<span class="x" onclick="event.stopPropagation(); removeLang('${key}')">✕</span>` : ''}
+    </div>
+  `).join('');
+}
+function switchLang(key){
+  activeLang = key;
+  renderLangTabs();
+  renderCues();
+}
+function removeLang(key){
+  delete languages[key];
+  if(activeLang === key) activeLang = 'original';
+  renderLangTabs();
+  renderCues();
+}
+function addLanguage(){
+  const sel = document.getElementById('newLangSelect');
+  const code = sel.value;
+  const name = sel.options[sel.selectedIndex].text;
+
+  if(languages[code]){ toast('Ye language pehle se add hai.'); switchLang(code); return; }
+
+  const langCount = Object.keys(languages).length;
+  if(!isUnlocked() && langCount >= FREE_LANG_LIMIT){
+    toast('🔒 Free plan mein sirf 1 extra language mil sakti hai. Unlimited ke liye Unlock karein.');
+    startUnlock();
+    return;
+  }
+
+  languages[code] = { name, cues: JSON.parse(JSON.stringify(languages['original'].cues)) };
+  activeLang = code;
+  renderLangTabs();
+  renderCues();
+  toast(`✅ ${name} language add ho gayi. Ab "Translate with AI" dabayein.`);
+}
+
+/* ============================================================
+   AI TRANSLATION (Supabase ai-proxy edge function)
+   ============================================================ */
+async function translateAll(){
+  if(activeLang === 'original'){
+    toast('Original language translate nahi hoti. Pehle koi language add karein.');
+    return;
+  }
+  const lang = languages[activeLang];
+  const original = languages['original'];
+  if(!original.cues.length){ toast('Pehle original script se cues generate karein.'); return; }
+
+  const btn = document.getElementById('translateBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Translating...`;
+
+  try{
+    const combinedText = original.cues.map((c,i) => `[${i}] ${c.text}`).join('\n');
+    const prompt = `Translate the following numbered subtitle lines into ${lang.name}. Keep the [N] index markers exactly as they are. Keep each line short and natural for subtitles (do not merge lines). Return ONLY the translated lines with their index markers, nothing else.\n\n${combinedText}`;
+
+    let translatedText;
+    if(DEMO_MODE){
+      // Demo fallback: simulate translation so the tool remains testable without a live backend
+      await new Promise(r => setTimeout(r, 900));
+      translatedText = original.cues.map((c,i) => `[${i}] (${lang.name}) ${c.text}`).join('\n');
+    } else {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ device_id: deviceId, tool_id: TOOL_ID, prompt, max_tokens: 2000 })
+      });
+      const data = await res.json();
+      translatedText = data.text || data.content || '';
+    }
+
+    // Parse "[N] translated text" back into cues
+    const map = {};
+    translatedText.split('\n').forEach(line => {
+      const m = line.match(/^\[(\d+)\]\s*(.*)$/);
+      if(m) map[+m[1]] = m[2].trim();
+    });
+
+    lang.cues = original.cues.map((c, i) => ({
+      start: c.start, end: c.end,
+      text: map[i] !== undefined ? map[i] : c.text
+    }));
+
+    renderCues();
+    toast(`✅ ${lang.name} mein translate ho gaya.`);
+  } catch(e){
+    console.error(e);
+    toast('❌ Translation fail hua. Dobara try karein.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🌐 Translate Active Language with AI';
+  }
+}
+
+/* ============================================================
+   MEDIA PREVIEW
+   ============================================================ */
+function loadMedia(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const box = document.getElementById('previewBox');
+  const isVideo = file.type.startsWith('video');
+
+  box.innerHTML = isVideo
+    ? `<video id="mediaPlayer" controls></video>`
+    : `<audio id="mediaPlayer" controls style="width:90%;"></audio>`;
+
+  mediaEl = document.getElementById('mediaPlayer');
+  mediaEl.src = url;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'sub-overlay';
+  overlay.id = 'subOverlay';
+  box.appendChild(overlay);
+  updateStylePreview();
+
+  mediaEl.addEventListener('timeupdate', syncSubtitle);
+}
+
+function syncSubtitle(){
+  const overlay = document.getElementById('subOverlay');
+  if(!overlay || !mediaEl) return;
+  const t = mediaEl.currentTime;
+  const cues = languages[activeLang].cues;
+  const active = cues.find(c => t >= c.start && t <= c.end);
+  overlay.textContent = active ? active.text : '';
+}
+
+/* ============================================================
+   STYLE CUSTOMIZER
+   ============================================================ */
+const swatchColors = ['#ffffff','#e8b84b','#3ddc97','#9b7bf0','#e8664b','#00d9ff'];
+let selectedColor = '#ffffff';
+function renderColorSwatches(){
+  const row = document.getElementById('colorSwatches');
+  row.innerHTML = swatchColors.map(c => `
+    <div class="swatch ${c===selectedColor?'selected':''}" style="background:${c};" onclick="pickColor('${c}')"></div>
+  `).join('');
+}
+function pickColor(c){ selectedColor = c; renderColorSwatches(); updateStylePreview(); }
+
+function updateStylePreview(){
+  const overlay = document.getElementById('subOverlay');
+  if(!overlay) return;
+  overlay.style.fontFamily = document.getElementById('styleFont').value;
+  overlay.style.fontSize = document.getElementById('styleSize').value + 'px';
+  overlay.style.color = selectedColor;
+  overlay.style.background = document.getElementById('styleBg').value;
+  const pos = document.getElementById('stylePos').value;
+  overlay.style.top = pos === 'top' ? '6%' : pos === 'middle' ? '45%' : 'auto';
+  overlay.style.bottom = pos === 'bottom' ? '6%' : 'auto';
+}
+
+/* ============================================================
+   EXPORT
+   ============================================================ */
+function buildSRT(cues){
+  return cues.map((c,i) => `${i+1}\n${formatTime(c.start)} --> ${formatTime(c.end)}\n${c.text}\n`).join('\n');
+}
+function buildVTT(cues){
+  return 'WEBVTT\n\n' + cues.map((c,i) => `${i+1}\n${formatTime(c.start,true)} --> ${formatTime(c.end,true)}\n${c.text}\n`).join('\n');
+}
+function buildTXT(cues){
+  return cues.map(c => c.text).join('\n');
+}
+
+function download(filename, content){
+  const blob = new Blob([content], { type:'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportFile(type){
+  const lang = languages[activeLang];
+  if(!lang.cues.length){ toast('⚠️ Export karne ke liye pehle cues generate karein.'); return; }
+
+  let cues = lang.cues;
+  const watermark = !isUnlocked() ? [{ start:0, end:1, text:'Made with IncomeAIHub Subtitle Maker (Free Plan)' }] : [];
+  cues = watermark.concat(cues);
+
+  let content;
+  if(type === 'srt') content = buildSRT(cues);
+  else if(type === 'vtt') content = buildVTT(cues);
+  else content = buildTXT(cues);
+
+  const filename = `subtitles_${lang.name.replace(/\s+/g,'_')}.${type}`;
+  download(filename, content);
+  toast(`✅ ${filename} download ho gayi.`);
+}
+
+function exportAllLanguages(){
+  if(!isUnlocked() && Object.keys(languages).length > FREE_LANG_LIMIT){
+    toast('🔒 Bulk export sirf Pro plan mein available hai.');
+    startUnlock();
+    return;
+  }
+  Object.keys(languages).forEach((key, i) => {
+    setTimeout(() => {
+      activeLang = key;
+      exportFile('srt');
+    }, i * 400);
+  });
+  activeLang = 'original';
+}
+
+/* ============================================================
+   PAYMENT (Razorpay + Supabase)
+   ============================================================ */
+async function processPayment(){
+  const payBtn = document.getElementById('payBtnText');
+
+  if(DEMO_MODE){
+    payBtn.innerHTML = `<span class="spinner"></span> Simulating...`;
+    await new Promise(r => setTimeout(r, 1200));
+    setUnlocked();
+    refreshLockUI();
+    closeModal('unlockModal');
+    toast('✅ DEMO: Unlock simulate ho gaya (real payment nahi hua).');
+    payBtn.textContent = `Razorpay se Pay Karein — ₹${PRICE_INR}`;
+    return;
+  }
+
+  try{
+    payBtn.innerHTML = `<span class="spinner"></span> Order banaya ja raha hai...`;
+    const orderRes = await fetch(`${SUPABASE_URL}/functions/v1/create-order`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ device_id: deviceId, tool_id: TOOL_ID, amount: PRICE_INR * 100 })
+    });
+    const order = await orderRes.json();
+
+    const rzp = new Razorpay({
+      key: RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: 'INR',
+      order_id: order.id,
+      name: 'IncomeAIHub by M.Dev',
+      description: 'Multi-language Subtitle Maker — Lifetime Unlock',
+      handler: async function(response){
+        const verifyRes = await fetch(`${SUPABASE_URL}/functions/v1/verify-payment`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+          body: JSON.stringify({
+            device_id: deviceId, tool_id: TOOL_ID,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature
+          })
+        });
+        const verify = await verifyRes.json();
+        if(verify.success){
+          setUnlocked();
+          refreshLockUI();
+          closeModal('unlockModal');
+          toast('✅ Payment successful! Pro features unlock ho gaye.');
+        } else {
+          toast('❌ Payment verify nahi ho paaya. Support se contact karein.');
+        }
+      },
+      theme:{ color:'#e8b84b' }
+    });
+    rzp.open();
+  } catch(e){
+    console.error(e);
+    toast('❌ Payment start nahi ho paaya. Dobara try karein.');
+  } finally {
+    payBtn.textContent = `Razorpay se Pay Karein — ₹${PRICE_INR}`;
+  }
+}
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+</html>
